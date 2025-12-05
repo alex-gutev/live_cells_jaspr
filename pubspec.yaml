@@ -1,16 +1,15 @@
 name: live_cells_jaspr
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+description: Provides utilities for using the Live Cells library in Jaspr projects.
+version: 0.1.0
+repository: https://github.com/alex-gutev/live_cells_jaspr
+issue_tracker: https://github.com/alex-gutev/live_cells_jaspr/issues
 
 environment:
   sdk: ^3.10.0-290.4.beta
 
-# Add regular dependencies here.
 dependencies:
   live_cells_core: ^1.4.0
   jaspr: ^0.21.7
-  # path: ^1.9.0
 
 dev_dependencies:
   jaspr_lints: ^0.5.1
