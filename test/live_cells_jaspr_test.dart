@@ -130,8 +130,7 @@ class CellComponentTest5 extends CellComponent {
             onClick: () => c2.value++,
             [text('${c2()}')]
         )
-      ],
-    );
+    ]);
   }
 }
 
@@ -151,8 +150,7 @@ class CellComponentTest6 extends CellComponent {
 
         // This component tree is rebuilt whenever the value of c1 changes
         _CellComponentTest6()
-      ],
-    );
+    ]);
   }
 }
 
@@ -355,523 +353,444 @@ T addListener<T extends SimpleListener>(ValueCell cell, T? listener) {
 }
 
 void main() {
-  /*group('CellComponent.builder', () {
-    testcomponents('Rebuilt when referenced cell changes', (tester) async {
+  group('CellComponent.builder', () {
+    testComponents('Rebuilt when referenced cell changes', (tester) async {
       final count = MutableCell(0);
-      await tester.pumpcomponent(TestApp(
-          child: CellComponent.builder((context) => Text('${count()}'))
-      ));
+      tester.pumpComponent(
+          CellComponent.builder((context) => text('${count()}'))
+      );
 
-      expect(find.text('0'), findsOnecomponent);
+      expect(find.text('0'), findsOneComponent);
       expect(find.text('1'), findsNothing);
 
       count.value++;
       await tester.pump();
 
       expect(find.text('0'), findsNothing);
-      expect(find.text('1'), findsOnecomponent);
+      expect(find.text('1'), findsOneComponent);
 
       count.value++;
       await tester.pump();
 
       expect(find.text('0'), findsNothing);
       expect(find.text('1'), findsNothing);
-      expect(find.text('2'), findsOnecomponent);
+      expect(find.text('2'), findsOneComponent);
     });
 
-    testcomponents('Rebuilt when multiple referenced cells changed', (tester) async {
+    testComponents('Rebuilt when multiple referenced cells changed', (tester) async {
       final a = MutableCell(0);
       final b = MutableCell(1);
       final sum = (a + b).store();
 
-      await tester.pumpcomponent(TestApp(
-          child: CellComponent.builder((context) => Text('${a()} + ${b()} = ${sum()}'))
-      ));
+      tester.pumpComponent(
+          CellComponent.builder((context) => text('${a()} + ${b()} = ${sum()}'))
+      );
 
-      expect(find.text('0 + 1 = 1'), findsOnecomponent);
+      expect(find.text('0 + 1 = 1'), findsOneComponent);
 
       a.value = 2;
       await tester.pump();
-      expect(find.text('2 + 1 = 3'), findsOnecomponent);
+      expect(find.text('2 + 1 = 3'), findsOneComponent);
 
       MutableCell.batch(() {
         a.value = 5;
         b.value = 8;
       });
+
       await tester.pump();
-      expect(find.text('5 + 8 = 13'), findsOnecomponent);
+      expect(find.text('5 + 8 = 13'), findsOneComponent);
     });
 
-    testcomponents('Cells defined in build method without .cell', (tester) async {
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
+    testComponents('Cells defined in build method without .cell', (tester) async {
+      tester.pumpComponent(
+        CellComponent.builder((context) {
           final c1 = MutableCell(0);
           final c2 = MutableCell(10);
 
-          return Column(
-            children: [
-              ElevatedButton(
-                  onPressed: () => c1.value++,
-                  child: Text('${c1()}')
+          return div([
+            button(
+                onClick: () => c1.value++,
+                [text('${c1()}')]
               ),
-              ElevatedButton(
-                  onPressed: () => c2.value++,
-                  child: Text('${c2()}')
+              button(
+                onClick: () => c2.value++,
+                [text('${c2()}')]
               )
             ],
           );
         }),
-      ));
+      );
 
-      expect(find.text('0'), findsOnecomponent);
-      expect(find.text('10'), findsOnecomponent);
+      expect(find.text('0'), findsOneComponent);
+      expect(find.text('10'), findsOneComponent);
 
-      await tester.tap(find.text('0'));
+      await tester.click(find.tag('button').first);
       await tester.pump();
 
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('10'), findsOnecomponent);
+      expect(find.text('1'), findsOneComponent);
+      expect(find.text('10'), findsOneComponent);
 
-      await tester.tap(find.text('10'));
+      await tester.click(find.tag('button').last);
       await tester.pump();
 
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('11'), findsOnecomponent);
+      expect(find.text('1'), findsOneComponent);
+      expect(find.text('11'), findsOneComponent);
 
-      await tester.tap(find.text('1'));
-      await tester.tap(find.text('11'));
+      await tester.click(find.tag('button').first);
+      await tester.click(find.tag('button').last);
       await tester.pump();
 
-      expect(find.text('2'), findsOnecomponent);
-      expect(find.text('12'), findsOnecomponent);
+      expect(find.text('2'), findsOneComponent);
+      expect(find.text('12'), findsOneComponent);
     });
 
-    testcomponents('Cells defined in build method without .cell persisted between builds', (tester) async {
-      await tester.pumpcomponent(TestApp(
-        child: Column(
-          children: [
-            const Text('First Build'),
-            CellComponent.builder((context) {
-              final c1 = MutableCell(0);
+    testComponents('Cells defined in build method without .cell persisted between builds', (tester) async {
+      tester.pumpComponent(
+        CellComponent.builder((context) {
+          final c1 = MutableCell(0);
+          final c2 = MutableCell(10);
+
+          return div([
+            button(
+                onClick: () => c1.value++,
+                [text('${c1()}')]
+            ),
+
+            // This component tree is rebuilt whenever the value of c1 changes
+            CellComponent.builder((_) {
               final c2 = MutableCell(10);
 
-              return Column(
-                children: [
-                  ElevatedButton(
-                      onPressed: () => c1.value++,
-                      child: Text('${c1()}')
-                  ),
-                  ElevatedButton(
-                      onPressed: () => c2.value++,
-                      child: Text('${c2()}')
-                  )
-                ],
+              return button(
+                  onClick: () => c2.value++,
+                  [text('${c2()}')]
               );
-            }),
-          ],
-        ),
-      ));
+            })
+          ]);
+        }),
+      );
 
-      expect(find.text('0'), findsOnecomponent);
-      expect(find.text('10'), findsOnecomponent);
-      expect(find.text('First Build'), findsOnecomponent);
+      expect(find.text('0'), findsOneComponent);
+      expect(find.text('10'), findsOneComponent);
 
       // Press first button
-      await tester.tap(find.text('0'));
+      await tester.click(find.tag('button').first);
       await tester.pump();
 
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('10'), findsOnecomponent);
+      expect(find.text('1'), findsOneComponent);
+      expect(find.text('10'), findsOneComponent);
 
       // Press second button
-      await tester.tap(find.text('10'));
+      await tester.click(find.tag('button').last);
       await tester.pump();
 
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('11'), findsOnecomponent);
-
-      // Rebuild component hierarchy
-      await tester.pumpcomponent(TestApp(
-        child: Column(
-          children: [
-            const Text('Second Build'),
-            CellComponent.builder((context) {
-              final c1 = MutableCell(0);
-              final c2 = MutableCell(10);
-
-              return Column(
-                children: [
-                  ElevatedButton(
-                      onPressed: () => c1.value++,
-                      child: Text('${c1()}')
-                  ),
-                  ElevatedButton(
-                      onPressed: () => c2.value++,
-                      child: Text('${c2()}')
-                  )
-                ],
-              );
-            }),
-          ],
-        ),
-      ));
-
-      // Check that counters still have the same values
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('11'), findsOnecomponent);
-
-      // Check that the hierarchy has been rebuilt
-      expect(find.text('Second Build'), findsOnecomponent);
-      expect(find.text('First Build'), findsNothing);
+      expect(find.text('1'), findsOneComponent);
+      expect(find.text('11'), findsOneComponent);
 
       // Press first button
-      await tester.tap(find.text('1'));
+      await tester.click(find.tag('button').first);
       await tester.pump();
 
-      expect(find.text('2'), findsOnecomponent);
-      expect(find.text('11'), findsOnecomponent);
+      expect(find.text('2'), findsOneComponent);
+      expect(find.text('11'), findsOneComponent);
 
       // Press second button
-      await tester.tap(find.text('11'));
+      await tester.click(find.tag('button').last);
       await tester.pump();
 
-      expect(find.text('2'), findsOnecomponent);
-      expect(find.text('12'), findsOnecomponent);
+      expect(find.text('2'), findsOneComponent);
+      expect(find.text('12'), findsOneComponent);
     });
 
-    testcomponents('Cells defined in build method without .cell restored', (tester) async {
-      await tester.pumpcomponent(TestApp(
-        child: Column(
-          children: [
-            CellComponent.builder((context) {
-              final c1 = MutableCell(0).restore();
-              final c2 = MutableCell(10).restore();
-
-              return Column(
-                children: [
-                  ElevatedButton(
-                      onPressed: () => c1.value++,
-                      child: Text('${c1()}')
-                  ),
-                  ElevatedButton(
-                      onPressed: () => c2.value++,
-                      child: Text('${c2()}')
-                  )
-                ],
-              );
-            }, restorationId: 'test_restoration_id'),
-          ],
-        ),
-      ));
-
-      expect(find.text('0'), findsOnecomponent);
-      expect(find.text('10'), findsOnecomponent);
-
-      // Press first button
-      await tester.tap(find.text('0'));
-      await tester.pump();
-
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('10'), findsOnecomponent);
-
-      // Press second button
-      await tester.tap(find.text('10'));
-      await tester.pump();
-
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('11'), findsOnecomponent);
-
-      // Restart and restore
-      await tester.restartAndRestore();
-
-      // Check that counters still have the same values
-      expect(find.text('1'), findsOnecomponent);
-      expect(find.text('11'), findsOnecomponent);
-
-      // Press first button
-      await tester.tap(find.text('1'));
-      await tester.pump();
-
-      expect(find.text('2'), findsOnecomponent);
-      expect(find.text('11'), findsOnecomponent);
-
-      // Press second button
-      await tester.tap(find.text('11'));
-      await tester.pump();
-
-      expect(find.text('2'), findsOnecomponent);
-      expect(find.text('12'), findsOnecomponent);
-    });
-
-    testcomponents('Conditional dependencies tracked correctly', (tester) async {
+    testComponents('Conditional dependencies tracked correctly', (tester) async {
       final a = MutableCell(0);
       final b = MutableCell(1);
       final cond = MutableCell(true);
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
+      tester.pumpComponent(
+        CellComponent.builder((context) {
           final value = cond() ? a() : b();
-          return Text(value.toString());
+          return text(value.toString());
         }),
-      ));
+      );
 
-      expect(find.text('0'), findsOnecomponent);
+      expect(find.text('0'), findsOneComponent);
 
       a.value = 10;
       await tester.pump();
-      expect(find.text('10'), findsOnecomponent);
+      expect(find.text('10'), findsOneComponent);
 
       cond.value = false;
       await tester.pump();
-      expect(find.text('1'), findsOnecomponent);
+      expect(find.text('1'), findsOneComponent);
 
       b.value = 100;
       await tester.pump();
-      expect(find.text('100'), findsOnecomponent);
+      expect(find.text('100'), findsOneComponent);
 
       cond.value = true;
       await tester.pump();
-      expect(find.text('10'), findsOnecomponent);
+      expect(find.text('10'), findsOneComponent);
 
       a.value = 20;
       await tester.pump();
-      expect(find.text('20'), findsOnecomponent);
+      expect(find.text('20'), findsOneComponent);
     });
 
-    testcomponents('New dependencies tracked correctly', (tester) async {
+    testComponents('New dependencies tracked correctly', (tester) async {
+      final cond = MutableCell(true);
+
       final a = MutableCell(0);
       final b = MutableCell('hello');
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) => Text('A = ${a()}')),
-      ));
+      tester.pumpComponent(
+        CellComponent.builder((context) {
+          if (cond()) {
+            return CellComponent.builder((_) => text('A = ${a()}'));
+          }
+          else {
+            return CellComponent.builder((_) => text('B = ${b()}'));
+          }
+        }),
+      );
 
-      expect(find.text('A = 0'), findsOnecomponent);
+      expect(find.text('A = 0'), findsOneComponent);
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) => Text('B = ${b()}')),
-      ));
+      cond.value = false;
+      await tester.pump();
 
-      expect(find.text('B = hello'), findsOnecomponent);
+      expect(find.text('B = hello'), findsOneComponent);
 
       b.value = 'bye';
       await tester.pump();
 
-      expect(find.text('B = bye'), findsOnecomponent);
+      expect(find.text('B = bye'), findsOneComponent);
     });
 
-    testcomponents('Unused dependencies untracked', (tester) async {
+    testComponents('Unused dependencies untracked', (tester) async {
+      final cond = MutableCell(true);
       final tracker = MockCellStateTracker();
       final a = TestManagedCell(tracker, 0);
       final b = MutableCell('hello');
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) => Text('A = ${a()}')),
-      ));
+      tester.pumpComponent(
+        CellComponent.builder((context) {
+          if (cond()) {
+            return text('A = ${a()}');
+          }
+          else {
+            return text('B = ${b()}');
+          }
+        }),
+      );
 
-      expect(find.text('A = 0'), findsOnecomponent);
+      expect(find.text('A = 0'), findsOneComponent);
 
       // Test that the dependency cell state was initialized
       verify(tracker.init()).called(1);
       verifyNever(tracker.dispose());
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) => Text('B = ${b()}')),
-      ));
+      cond.value = false;
+      await tester.pump();
 
-      expect(find.text('B = hello'), findsOnecomponent);
+      expect(find.text('B = hello'), findsOneComponent);
 
       // Test that the dependency cell state was disposed
       verifyNever(tracker.init());
       verify(tracker.dispose()).called(1);
     });
 
-    testcomponents('Dependencies untracked when unmounted', (tester) async {
+    testComponents('Dependencies untracked when unmounted', (tester) async {
+      final counter = MutableCell(1);
+
       final tracker = MockCellStateTracker();
       final a = TestManagedCell(tracker, 0);
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) => Text('A = ${a()}')),
-      ));
+      tester.pumpComponent(
+        CellComponent.builder((context) {
+          if (counter() > 0) {
+            return CellComponent.builder((context) => text('A = ${a()}'));
+          }
 
-      expect(find.text('A = 0'), findsOnecomponent);
+          return div([]);
+        }),
+      );
+
+      expect(find.text('A = 0'), findsOneComponent);
 
       // Test that the dependency cell state was initialized
       verify(tracker.init()).called(1);
       verifyNever(tracker.dispose());
 
-      await tester.pumpcomponent(TestApp(
-        child: Container(),
-      ));
+      counter.value = 0;
+      await tester.pump();
 
       // Test that the dependency cell state was disposed
       verifyNever(tracker.init());
       verify(tracker.dispose()).called(1);
     });
 
-    testcomponents('Does not leak resources when unmounted', (tester) async {
+    testComponents('Does not leak resources when unmounted', (tester) async {
+      final counter = MutableCell(1);
       final tracker = MockCellStateTracker();
       final a = TestManagedCell(tracker, 0);
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
-          final b = MutableCell(1);
-          final c = ValueCell.computed(() => a() + b());
-          final d = MutableCell.computed(() => a() + b(), (value) => b.value = value);
+      tester.pumpComponent(
+        CellComponent.builder((context) {
+          if (counter() > 0) {
+            return CellComponent.builder((context) {
+              final b = MutableCell(1);
+              final c = ValueCell.computed(() => a() + b());
+              final d = MutableCell.computed(() => a() + b(), (value) => b.value = value);
 
-          return Text('C = ${c()}, D = ${d()}');
+              return text('C = ${c()}, D = ${d()}');
+            });
+          }
+
+          return div([]);
         }),
-      ));
+      );
 
-      expect(find.text('C = 1, D = 1'), findsOnecomponent);
+      expect(find.text('C = 1, D = 1'), findsOneComponent);
 
       // Test that the dependency cell state was initialized
       verify(tracker.init()).called(1);
       verifyNever(tracker.dispose());
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
-          final b = MutableCell(1);
-          final c = ValueCell.computed(() => a() + b());
-          final d = MutableCell.computed(() => a() + b(), (value) => b.value = value);
+      counter.value++;
+      await tester.pump();
 
-          return Text('C = ${c()}, D = ${d()}');
-        }),
-      ));
-
-      await tester.pumpcomponent(TestApp(
-        child: Container(),
-      ));
+      counter.value = 0;
+      await tester.pump();
 
       // Test that the dependency cell state was disposed
       verifyNever(tracker.init());
       verify(tracker.dispose()).called(1);
     });
 
-    testcomponents('Using ValueCell.watch in build method', (tester) async {
+    testComponents('Using ValueCell.watch in build method', (tester) async {
+      final counter = MutableCell(1);
       final listener1 = MockSimpleListener();
       final listener2 = MockSimpleListener();
       final cell = ActionCell();
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
-          ValueCell.watch(() {
-            cell.observe();
-            listener1();
-          });
+      tester.pumpComponent(
+        CellComponent.builder((context) {
+          if (counter() > 0) {
+            return CellComponent.builder((context) {
+              ValueCell.watch(() {
+                cell.observe();
+                listener1();
+              });
 
-          ValueCell.watch(() {
-            cell.observe();
-            listener2();
-          });
+              ValueCell.watch(() {
+                cell.observe();
+                listener2();
+              });
 
-          return Container();
+              return div([]);
+            });
+          }
+
+          return div([]);
         }),
-      ));
+      );
 
       verify(listener1()).called(1);
       verify(listener2()).called(1);
 
       cell.trigger();
+      await tester.pump();
+
       verify(listener1()).called(1);
       verify(listener2()).called(1);
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
-          ValueCell.watch(() {
-            cell.observe();
-            listener1();
-          });
-
-          ValueCell.watch(() {
-            cell.observe();
-            listener2();
-          });
-
-          return const SizedBox();
-        }),
-      ));
+      counter.value++;
+      await tester.pump();
 
       verifyNever(listener1());
       verifyNever(listener2());
 
       cell.trigger();
+      await tester.pump();
+
       verify(listener1()).called(1);
       verify(listener2()).called(1);
 
-      await tester.pumpcomponent(
-          const TestApp(child: SizedBox())
-      );
+      counter.value = 0;
+      await tester.pump();
 
       cell.trigger();
+      await tester.pump();
+
       cell.trigger();
+      await tester.pump();
 
       verifyNever(listener1());
       verifyNever(listener2());
     });
 
-    testcomponents('Using Watch in build method', (tester) async {
+    testComponents('Using Watch in build method', (tester) async {
+      final counter = MutableCell(1);
       final listener1 = MockSimpleListener();
       final listener2 = MockSimpleListener();
       final cell = ActionCell();
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
-          Watch((_) {
-            cell.observe();
-            listener1();
-          });
+      tester.pumpComponent(
+        CellComponent.builder((context) {
+          if (counter() > 0) {
+            return CellComponent.builder((_) {
+              Watch((_) {
+                cell.observe();
+                listener1();
+              });
 
-          Watch((_) {
-            cell.observe();
-            listener2();
-          });
+              Watch((_) {
+                cell.observe();
+                listener2();
+              });
 
-          return Container();
+              return div([]);
+            });
+          }
+
+          return div([]);
         }),
-      ));
+      );
 
       verify(listener1()).called(1);
       verify(listener2()).called(1);
 
       cell.trigger();
+      await tester.pump();
+
       verify(listener1()).called(1);
       verify(listener2()).called(1);
 
-      await tester.pumpcomponent(TestApp(
-        child: CellComponent.builder((context) {
-          Watch((_) {
-            cell.observe();
-            listener1();
-          });
-
-          Watch((_) {
-            cell.observe();
-            listener2();
-          });
-
-          return const SizedBox();
-        }),
-      ));
+      counter.value++;
+      await tester.pump();
 
       verifyNever(listener1());
       verifyNever(listener2());
 
       cell.trigger();
+      await tester.pump();
+
       verify(listener1()).called(1);
       verify(listener2()).called(1);
 
-      await tester.pumpcomponent(
-          const TestApp(child: SizedBox())
-      );
+      counter.value = 0;
+      await tester.pump();
 
       cell.trigger();
+      await tester.pump();
+
       cell.trigger();
+      await tester.pump();
 
       verifyNever(listener1());
       verifyNever(listener2());
     });
-  });*/
+  });
 
   group('CellComponent subclass', () {
     testComponents('Rebuilt when referenced cell changes', (tester) async {
