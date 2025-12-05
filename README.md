@@ -1,5 +1,5 @@
 This package provides functionality for using the [Live Cells](https://livecell.gutev.dev/) library 
-in Jaspr projects.
+in [Jaspr](https://jaspr.site/) projects.
 
 ## Features
 
