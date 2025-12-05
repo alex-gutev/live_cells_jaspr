@@ -76,10 +76,44 @@ import 'package:live_cells_core/live_cells_internals.dart';
 abstract class CellComponent extends StatefulComponent {
   const CellComponent({super.key});
 
+  /// Create a [CellComponent] with the [build] method defined by [builder].
+  ///
+  /// This allows a component, which is dependent on the values of one or more
+  /// cells, to be defined without subclassing.
+  ///
+  /// Cells defined directly within [builder] will have their state restored
+  /// between builds. The same rules must be observed when defining cells in
+  /// [builder] that must be observed when defining cells in the [build]
+  /// method of a [CellComponent] subclass.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// CellComponent.builder((context) => Text('The value of cell a is ${a()}'))
+  /// ```
+  factory CellComponent.builder(Component Function(BuildContext context) builder, {
+    Key? key,
+  }) = _CellWidgetBuilder;
+
+  /// Build the component underneath this component in the tree
+  Component build(BuildContext context);
+
   @override
   State createState() => _CellComponent();
+}
 
-  Component build(BuildContext context);
+/// [CellComponent] with the [build] method defined by [builder].
+class _CellWidgetBuilder extends CellComponent {
+  /// Component builder function
+  final Component Function(BuildContext context) builder;
+
+  /// Create a [CellComponent] with [build] defined by [builder].
+  const _CellWidgetBuilder(this.builder, {
+    super.key,
+  });
+
+  @override
+  Component build(BuildContext context) => builder(context);
 }
 
 class _CellComponent extends State<CellComponent> {
