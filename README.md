@@ -46,7 +46,7 @@ class Counter extends CellComponent {
   
   @override
   Component build(BuildContext context) {
-    final MutableCell<int> count;
+    final count = MutableCell<int>(0);
 
     ValueCell.watch(() {
       print('Count = ${count()}');
@@ -77,7 +77,7 @@ The `CellComponent.builder` constructor allows you to create a `CellComponent` w
 
 ```dart
 CellComponent.builder((context) {
-  final MutableCell<int> count;
+  final count = MutableCell<int>(0);
   
   ValueCell.watch(() {
     print('Count = ${count()}');

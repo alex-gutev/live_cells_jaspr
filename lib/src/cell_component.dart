@@ -23,7 +23,7 @@ import 'package:live_cells_core/live_cells_internals.dart';
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
-///     return Text('The value of cell a is ${a()}');
+///     return text('The value of cell a is ${a()}');
 ///   }
 /// }
 /// ```
@@ -89,7 +89,7 @@ abstract class CellComponent extends StatefulComponent {
   /// Example:
   ///
   /// ```dart
-  /// CellComponent.builder((context) => Text('The value of cell a is ${a()}'))
+  /// CellComponent.builder((context) => text('The value of cell a is ${a()}'))
   /// ```
   factory CellComponent.builder(Component Function(BuildContext context) builder, {
     Key? key,
