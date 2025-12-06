@@ -448,7 +448,6 @@ void main() {
       tester.pumpComponent(
         CellComponent.builder((context) {
           final c1 = MutableCell(0);
-          final c2 = MutableCell(10);
 
           return div([
             button(
