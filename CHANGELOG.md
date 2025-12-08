@@ -1,3 +1,9 @@
+## 0.1.2
+
+* Fixed issue with `setState` being called on server environment.
+
+  `CellComponent` now only calls `setState` on the client (in the browser).
+
 ## 0.1.1
 
 * Fixed issues in examples in README and documentation comments.
