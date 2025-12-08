@@ -138,7 +138,6 @@ class _CellComponent extends State<CellComponent> {
     _observer = _CellComponentObserver(_rebuild);
   }
 
-
   /// Generate a key for the cell at index [index].
   _WidgetCellKey _generateCellKey(ValueCell cell, int index) {
     if (_firstBuild) {
@@ -186,7 +185,7 @@ class _CellComponent extends State<CellComponent> {
   /// If the widget tree is currently in the build phase, the build is scheduled
   /// using [addPostFrameCallback].
   void _rebuild() {
-    if (mounted) {
+    if (kIsWeb && mounted) {
       setState(() {});
     }
   }
